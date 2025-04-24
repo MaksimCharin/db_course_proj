@@ -9,16 +9,14 @@ readme = "README.md"
 python = "^3.13"
 psycopg2 = "^2.9.10"
 requests = "^2.32.3"
+psycopg2-binary = "^2.9.10"
+python-dotenv = "^1.1.0"
 
 
 [tool.poetry.group.lint.dependencies]
 isort = "^6.0.1"
 black = "^25.1.0"
 
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.5"
-pytest-cov = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core"]
