@@ -1,5 +1,5 @@
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
 
 def get_db_config():
     """Получение конфигурации базы данных из переменных окружения"""
@@ -12,3 +12,4 @@ def get_db_config():
         'client_encoding': os.getenv('DB_CLIENT_ENCODING')
     }
     return db_config
+

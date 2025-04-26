@@ -1,11 +1,10 @@
 from typing import Dict
-
 from src.api import APIManager
 from src.db_manager import DBManager
 
-
 def initialize_database(db_config: Dict[str, str]):
     """Инициализация базы данных и заполнение её данными"""
+    DBManager.create_database(db_config)
     user_manager = DBManager(db_config)
     user_manager.create_tables()
 
@@ -24,3 +23,4 @@ def initialize_database(db_config: Dict[str, str]):
                 url=vacancy['alternate_url']
             )
     user_manager.close()
+

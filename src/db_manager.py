@@ -1,7 +1,6 @@
 from typing import List, Optional, Tuple
-
 import psycopg2
-
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 class DBManager:
     """Класс для управления базой данных"""
@@ -14,8 +13,26 @@ class DBManager:
         except Exception as e:
             raise e
 
+    @staticmethod
+    def create_database(db_config: dict) -> None:
+        """Создание базы данных, если она не существует"""
+        dbname = db_config['dbname']
+        conn = psycopg2.connect(dbname='postgres', user=db_config['user'],
+                                password=db_config['password'], host=db_config['host'])
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT 1 FROM pg_database WHERE datname=%s", (dbname,))
+        exists = cursor.fetchone()
+
+        if not exists:
+            cursor.execute(f"CREATE DATABASE {dbname}")
+
+        cursor.close()
+        conn.close()
+
     def create_tables(self) -> None:
-        """Создание таблиц в базе данных."""
+        """Создание таблиц в базе данных"""
         create_employers_table = """
         CREATE TABLE IF NOT EXISTS employers (
             id SERIAL PRIMARY KEY,
@@ -59,9 +76,9 @@ class DBManager:
     def get_companies_and_vacancies_count(self) -> List[Tuple[str, int]]:
         """Получение списка всех компаний и количества вакансий у каждой компании"""
         query = """
-        SELECT e.name, COUNT(v.id) AS vacancies_count 
-        FROM employers e 
-        LEFT JOIN vacancies v ON e.id = v.employer_id 
+        SELECT e.name, COUNT(v.id) AS vacancies_count
+        FROM employers e
+        LEFT JOIN vacancies v ON e.id = v.employer_id
         GROUP BY e.id;
         """
 
@@ -106,5 +123,6 @@ class DBManager:
         return self.cursor.fetchall()
 
     def close(self) -> None:
+        """Закрытие базы данных"""
         self.cursor.close()
         self.connection.close()
